@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <LC_PATH>D:\SteamLibrary\steamapps\common\Lethal Company\Lethal Company_Data\Managed</LC_PATH>
+    <LC_PATH_V49>D:\LethalCompanyDlls</LC_PATH_V49>
+    <LC_PATH_V50>D:\LethalCompanyDlls</LC_PATH_V50>
+    <BEPINEX_ASSEMBLY_PATH>D:\SteamLibrary\steamapps\common\Lethal Company\BepInEx\core</BEPINEX_ASSEMBLY_PATH>
+    <BEPINEX_PLUGIN_PATH>C:\Users\Principal\AppData\Roaming\r2modmanPlus-local\LethalCompany\profiles\Modding\BepInEx\plugins\Evaisa-LethalLib\LethalLib</BEPINEX_PLUGIN_PATH>
+    <LC_PLUGIN_PATH>C:\Users\Principal\AppData\Roaming\r2modmanPlus-local\LethalCompany\profiles\Modding\BepInEx\plugins</LC_PLUGIN_PATH>
+    <LC_PLUGIN_DIR>C:\Users\Principal\AppData\Roaming\r2modmanPlus-local\LethalCompany\profiles\Modding\BepInEx\plugins\WhiteSpike-CustomItemBehaviourLibrary/CustomItemBehaviourLibrary</LC_PLUGIN_DIR>
+  </PropertyGroup>
+</Project>
