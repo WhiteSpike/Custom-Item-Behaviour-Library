@@ -22,7 +22,7 @@ namespace CustomItemBehaviourLibrary.Patches
         [HarmonyPatch(nameof(PlayerControllerB.Update))]
         static IEnumerable<CodeInstruction> UpdateTranspiler(IEnumerable<CodeInstruction> instructions)
         {
-            MethodInfo reduceMovement = typeof(ContainerBehaviour).GetMethod(nameof(ContainerBehaviour.CheckIfPlayerCarryingWheelbarrowMovement));
+            MethodInfo reduceMovement = typeof(ContainerBehaviour).GetMethod(nameof(ContainerBehaviour.CheckIfPlayerCarryingContainerMovement));
             FieldInfo carryWeight = typeof(PlayerControllerB).GetField(nameof(PlayerControllerB.carryWeight));
             int index = 0;
             List<CodeInstruction> codes = new(instructions);
@@ -36,7 +36,7 @@ namespace CustomItemBehaviourLibrary.Patches
         [HarmonyTranspiler]
         static IEnumerable<CodeInstruction> PlayerLookInputTranspiler(IEnumerable<CodeInstruction> instructions)
         {
-            MethodInfo reduceLookSensitivity = typeof(ContainerBehaviour).GetMethod(nameof(ContainerBehaviour.CheckIfPlayerCarryingWheelbarrowLookSensitivity));
+            MethodInfo reduceLookSensitivity = typeof(ContainerBehaviour).GetMethod(nameof(ContainerBehaviour.CheckIfPlayerCarryingContainerLookSensitivity));
             List<CodeInstruction> codes = new(instructions);
             int index = 0;
             Tools.FindFloat(ref index, ref codes, findValue: 0.008f, addCode: reduceLookSensitivity, errorMessage: "Couldn't find look sensitivity value we wanted to influence");
@@ -47,11 +47,11 @@ namespace CustomItemBehaviourLibrary.Patches
         [HarmonyTranspiler]
         static IEnumerable<CodeInstruction> CrouchPerformmedTranspiler(IEnumerable<CodeInstruction> instructions)
         {
-            MethodInfo carryingWheelbarrow = typeof(ContainerBehaviour).GetMethod(nameof(ContainerBehaviour.CheckIfPlayerCarryingWheelbarrow));
+            MethodInfo carryingContainer = typeof(ContainerBehaviour).GetMethod(nameof(ContainerBehaviour.CheckIfPlayerCarryingContainer));
             FieldInfo isMenuOpen = typeof(QuickMenuManager).GetField(nameof(QuickMenuManager.isMenuOpen));
             List<CodeInstruction> codes = new(instructions);
             int index = 0;
-            Tools.FindField(ref index, ref codes, findField: isMenuOpen, addCode: carryingWheelbarrow, orInstruction: true, errorMessage: "Couldn't find isMenuOpen field");
+            Tools.FindField(ref index, ref codes, findField: isMenuOpen, addCode: carryingContainer, orInstruction: true, errorMessage: "Couldn't find isMenuOpen field");
             return codes;
         }
 

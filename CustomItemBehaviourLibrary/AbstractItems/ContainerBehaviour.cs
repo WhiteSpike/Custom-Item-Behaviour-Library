@@ -22,11 +22,11 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         protected Restrictions restriction;
         private System.Random randomNoise;
         /// <summary>
-        /// Component responsible to emit sound when the wheelbarrow's moving
+        /// Component responsible to emit sound when the container's moving
         /// </summary>
         private AudioSource wheelsNoise;
         /// <summary>
-        /// The sound the wheelbarrow will be playing while in movement
+        /// The sound the container will be playing while in movement
         /// </summary>
         protected AudioClip[] wheelsClip;
         /// <summary>
@@ -38,49 +38,49 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         /// </summary>
         private float soundCounter;
         /// <summary>
-        /// Maximum amount of items the wheelbarrow allows to store inside
+        /// Maximum amount of items the container allows to store inside
         /// </summary>
         protected int maximumAmountItems;
         /// <summary>
-        /// Maximum weight allowed to be stored in the wheelbarrow
+        /// Maximum weight allowed to be stored in the container
         /// </summary>
         protected float maximumWeightAllowed;
         /// <summary>
-        /// Current amount of items stored in the wheelbarrow
+        /// Current amount of items stored in the container
         /// </summary>
         private int currentAmountItems;
         private float totalWeight;
         /// <summary>
-        /// Multiplier to the inserted item's weight when inserted into the wheelbarrow to increase the wheelbarrow's total weight
+        /// Multiplier to the inserted item's weight when inserted into the container to increase the container's total weight
         /// </summary>
         protected float weightReduceMultiplier;
         /// <summary>
-        /// Weight of the wheelbarrow when not carrying any items
+        /// Weight of the container when not carrying any items
         /// </summary>
         protected float defaultWeight;
         /// <summary>
-        /// How sloppy the player's movement is when moving with a wheelbarrow
+        /// How sloppy the player's movement is when moving with a container
         /// </summary>
         protected float sloppiness;
         /// <summary>
-        /// Value multiplied on the look sensitivity of the player who's carrying the wheelbarrow
+        /// Value multiplied on the look sensitivity of the player who's carrying the container
         /// </summary>
         protected float lookSensitivityDrawback;
         /// <summary>
-        /// The GameObject responsible to be containing all of the items stored in the wheelbarrow
+        /// The GameObject responsible to be containing all of the items stored in the container
         /// </summary>
         private BoxCollider container;
         /// <summary>
-        /// Trigger responsible to allow interacting with wheelbarrow's container of items
+        /// Trigger responsible to allow interacting with container's container of items
         /// </summary>
         private InteractTrigger[] triggers;
         protected bool playSounds;
         private Dictionary<Restrictions, Func<bool>> checkMethods;
 
         private const string NO_ITEMS_TEXT = "No items to deposit...";
-        private const string FULL_TEXT = "Too many items in the wheelbarrow";
-        private const string TOO_MUCH_WEIGHT_TEXT = "Too much weight in the wheelbarrow...";
-        private const string ALL_FULL_TEXT = "Cannot insert any more items in the wheelbarrow...";
+        private const string FULL_TEXT = "Too many items in the container";
+        private const string TOO_MUCH_WEIGHT_TEXT = "Too much weight in the container...";
+        private const string ALL_FULL_TEXT = "Cannot insert any more items in the container...";
         private const string WHEELBARROWCEPTION_TEXT = "You're not allowed to do that...";
         private const string DEPOSIT_TEXT = "Depositing item...";
         private const string START_DEPOSIT_TEXT = "Deposit item: [LMB]";
@@ -108,16 +108,16 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             }
             foreach (InteractTrigger trigger in triggers)
             {
-                trigger.onInteract.AddListener(InteractWheelbarrow);
+                trigger.onInteract.AddListener(InteractContainer);
                 trigger.tag = nameof(InteractTrigger); // Necessary for the interact UI to appear
                 trigger.interactCooldown = false;
                 trigger.cooldownTime = 0;
             }
             checkMethods = new Dictionary<Restrictions, Func<bool>>
             {
-                [Restrictions.ItemCount] = CheckWheelbarrowItemCountRestriction,
-                [Restrictions.TotalWeight] = CheckWheelbarrowWeightRestriction,
-                [Restrictions.All] = CheckWheelbarrowAllRestrictions
+                [Restrictions.ItemCount] = CheckContainerItemCountRestriction,
+                [Restrictions.TotalWeight] = CheckContainerWeightRestriction,
+                [Restrictions.All] = CheckContainerAllRestrictions
             };
 
             SetupItemAttributes();
@@ -134,31 +134,31 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         public override void Update()
         {
             base.Update();
-            UpdateWheelbarrowSounds();
+            UpdateContainerSounds();
             UpdateInteractTriggers();
         }
-        public void UpdateWheelbarrowDrop()
+        public void UpdateContainerDrop()
         {
             if (!isHeld) return;
             if (playerHeldBy != GameNetworkManager.Instance.localPlayerController) return;
             if (currentAmountItems <= 0) return;
-            DropAllItemsInWheelbarrowServerRpc();
+            DropAllItemsInContainerServerRpc();
         }
         [ServerRpc(RequireOwnership = false)]
-        private void DropAllItemsInWheelbarrowServerRpc()
+        private void DropAllItemsInContainerServerRpc()
         {
-            DropAllItemsInWheelbarrowClientRpc();
+            DropAllItemsInContainerClientRpc();
         }
         [ClientRpc]
-        private void DropAllItemsInWheelbarrowClientRpc()
+        private void DropAllItemsInContainerClientRpc()
         {
             GrabbableObject[] storedItems = GetComponentsInChildren<GrabbableObject>();
             for(int i = 0; i < storedItems.Length; i++)
             {
-                if (storedItems[i] == this) continue; // Don't drop the wheelbarrow
+                if (storedItems[i] == this) continue; // Don't drop the container
                 DropItem(ref storedItems[i]);
             }
-            UpdateWheelbarrowWeightServerRpc();
+            UpdateContainerWeightServerRpc();
         }
         /// <summary>
         /// Copy paste from PlayerControllerB.DropAllHeldItems applied on a singular grabbable object script
@@ -192,7 +192,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
                 grabbableObject.playerHeldBy = null;
             }
         }
-        private void UpdateWheelbarrowSounds()
+        private void UpdateContainerSounds()
         {
             soundCounter += Time.deltaTime;
             if (!isHeld) return;
@@ -230,7 +230,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
                 SetInteractTriggers(false, WHEELBARROWCEPTION_TEXT);
                 return;
             }
-            if (CheckWheelbarrowRestrictions()) return;
+            if (CheckContainerRestrictions()) return;
             SetInteractTriggers(true, START_DEPOSIT_TEXT);
         }
         private void SetInteractTriggers(bool interactable = false, string hoverTip = START_DEPOSIT_TEXT)
@@ -247,12 +247,12 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             foreach (InteractTrigger trigger in triggers)
                 trigger.gameObject.SetActive(enabled);
         }
-        private bool CheckWheelbarrowRestrictions()
+        private bool CheckContainerRestrictions()
         {
             if (restriction == Restrictions.None) return false;
             return checkMethods[restriction].Invoke();
         }
-        private bool CheckWheelbarrowAllRestrictions()
+        private bool CheckContainerAllRestrictions()
         {
             bool weightCondition = totalWeight > 1f + (maximumWeightAllowed / 100f);
             bool itemCountCondition = currentAmountItems >= maximumAmountItems;
@@ -263,7 +263,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             }
             return false;
         }
-        private bool CheckWheelbarrowWeightRestriction()
+        private bool CheckContainerWeightRestriction()
         {
             if (totalWeight > 1f + (maximumWeightAllowed / 100f))
             {
@@ -272,7 +272,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             }
             return false;
         }
-        private bool CheckWheelbarrowItemCountRestriction()
+        private bool CheckContainerItemCountRestriction()
         {
             if (currentAmountItems >= maximumAmountItems)
             {
@@ -299,7 +299,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
 
                 PlayerManager.instance.SetSensitivityMultiplier(lookSensitivityDrawback);
                 PlayerManager.instance.SetSloppyMultiplier(sloppiness);
-                PlayerManager.instance.SetHoldingWheelbarrow(true);
+                PlayerManager.instance.SetHoldingContainer(true);
             }
             else
             {
@@ -316,7 +316,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
 
                 PlayerManager.instance.ResetSensitivityMultiplier();
                 PlayerManager.instance.ResetSloppyMultiplier();
-                PlayerManager.instance.SetHoldingWheelbarrow(false);
+                PlayerManager.instance.SetHoldingContainer(false);
             }
         }
 
@@ -349,33 +349,33 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             }
         }
         /// <summary>
-        /// Setups attributes related to the wheelbarrow item
+        /// Setups attributes related to the container item
         /// </summary>
         private void SetupItemAttributes()
         {
             grabbable = true;
             grabbableToEnemies = true;
-            itemProperties.toolTips = SetupWheelbarrowTooltips();
+            itemProperties.toolTips = SetupContainerTooltips();
             SetupScanNodeProperties();
         }
-        protected abstract string[] SetupWheelbarrowTooltips();
+        protected abstract string[] SetupContainerTooltips();
 
         /// <summary>
-        /// Prepares the Scan Node associated with the Wheelbarrow for user display
+        /// Prepares the Scan Node associated with the Container for user display
         /// </summary>
         protected abstract void SetupScanNodeProperties();
 
         public void DecrementStoredItems()
         {
-            UpdateWheelbarrowWeightServerRpc();
+            UpdateContainerWeightServerRpc();
         }
         [ServerRpc(RequireOwnership = false)]
-        private void UpdateWheelbarrowWeightServerRpc()
+        private void UpdateContainerWeightServerRpc()
         {
-            UpdateWheelbarrowWeightClientRpc();
+            UpdateContainerWeightClientRpc();
         }
         [ClientRpc]
-        private void UpdateWheelbarrowWeightClientRpc()
+        private void UpdateContainerWeightClientRpc()
         {
             GrabbableObject[] storedItems = GetComponentsInChildren<GrabbableObject>();
             if (isHeld && playerHeldBy == GameNetworkManager.Instance.localPlayerController) playerHeldBy.carryWeight -= Mathf.Clamp(BackMuscles.DecreasePossibleWeight(totalWeight - 1f), 0f, 10f);
@@ -391,18 +391,18 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             if (isHeld && playerHeldBy == GameNetworkManager.Instance.localPlayerController) playerHeldBy.carryWeight += Mathf.Clamp(BackMuscles.DecreasePossibleWeight(totalWeight - 1f), 0f, 10f);
         }
         /// <summary>
-        /// Action when the interaction bar is completely filled on the container of the wheelbarrow.
-        /// It will store the item in the wheelbarrow, allowing it to be carried when grabbing the wheelbarrow
+        /// Action when the interaction bar is completely filled on the container of the container.
+        /// It will store the item in the container, allowing it to be carried when grabbing the container
         /// </summary>
         /// <param name="playerInteractor"></param>
-        private void InteractWheelbarrow(PlayerControllerB playerInteractor)
+        private void InteractContainer(PlayerControllerB playerInteractor)
         {
             if (playerInteractor.isHoldingObject)
             {
-                StoreItemInWheelbarrow(ref playerInteractor);
+                StoreItemInContainer(ref playerInteractor);
             }
         }
-        private void StoreItemInWheelbarrow(ref PlayerControllerB playerInteractor)
+        private void StoreItemInContainer(ref PlayerControllerB playerInteractor)
         {
             Collider triggerCollider = container;
             Vector3 vector = RoundManager.RandomPointInBounds(triggerCollider.bounds);
@@ -410,29 +410,29 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             vector.y += playerInteractor.currentlyHeldObjectServer.itemProperties.verticalOffset;
             vector = GetComponent<NetworkObject>().transform.InverseTransformPoint(vector);
             playerInteractor.DiscardHeldObject(placeObject: true, parentObjectTo: GetComponent<NetworkObject>(), placePosition: vector, matchRotationOfParent: false);
-            UpdateWheelbarrowWeightServerRpc();
+            UpdateContainerWeightServerRpc();
         }
 
-        public static float CheckIfPlayerCarryingWheelbarrowLookSensitivity(float defaultValue)
+        public static float CheckIfPlayerCarryingContainerLookSensitivity(float defaultValue)
         {
             PlayerControllerB player = GameNetworkManager.Instance.localPlayerController;
             if (player == null || player.thisController == null) return defaultValue;
             if (player.thisController.velocity.magnitude <= VELOCITY_APPLY_EFFECT_THRESHOLD) return defaultValue;
             return defaultValue * PlayerManager.instance.GetSensitivityMultiplier();
         }
-        public static float CheckIfPlayerCarryingWheelbarrowMovement(float defaultValue)
+        public static float CheckIfPlayerCarryingContainerMovement(float defaultValue)
         {
             PlayerControllerB player = GameNetworkManager.Instance.localPlayerController;
             if (player == null || player.thisController == null) return defaultValue;
             if (player.thisController.velocity.magnitude <= VELOCITY_APPLY_EFFECT_THRESHOLD) return defaultValue;
             return defaultValue * PlayerManager.instance.GetSloppyMultiplier();
         }
-        public static bool CheckIfPlayerCarryingWheelbarrow()
+        public static bool CheckIfPlayerCarryingContainer()
         {
-            return PlayerManager.instance.GetHoldingWheelbarrow();
+            return PlayerManager.instance.GetHoldingContainer();
         }
 
-        public static bool CheckIfItemInWheelbarrow(GrabbableObject item)
+        public static bool CheckIfItemInContainer(GrabbableObject item)
         {
             if (item == null) return false;
             return item.GetComponentInParent<ContainerBehaviour>() != null;

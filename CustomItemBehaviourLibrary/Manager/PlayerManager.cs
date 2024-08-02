@@ -10,7 +10,7 @@ namespace CustomItemBehaviourLibrary.Manager
         internal const float DEFAULT_MULTIPLIER = 1.0f;
         internal float sensitivityMultiplier = DEFAULT_MULTIPLIER;
         internal float sloppyMultiplier = DEFAULT_MULTIPLIER;
-        internal bool holdingWheelbarrow = false;
+        internal bool holdingContainer = false;
 
         internal static PlayerManager instance;
         void Awake()
@@ -28,9 +28,9 @@ namespace CustomItemBehaviourLibrary.Manager
             this.sloppyMultiplier = sloppyMultiplier;
         }
 
-        internal void SetHoldingWheelbarrow(bool holdingWheelbarrow)
+        internal void SetHoldingContainer(bool holdingContainer)
         {
-            this.holdingWheelbarrow = holdingWheelbarrow;
+            this.holdingContainer = holdingContainer;
         }
 
         internal void ResetSensitivityMultiplier()
@@ -50,9 +50,9 @@ namespace CustomItemBehaviourLibrary.Manager
         {
             return sloppyMultiplier;
         }
-        public bool GetHoldingWheelbarrow()
+        public bool GetHoldingContainer()
         {
-            return holdingWheelbarrow;
+            return holdingContainer;
         }
     }
 }

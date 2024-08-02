@@ -50,6 +50,7 @@ namespace CustomItemBehaviourLibrary
         {
             harmony.PatchAll(typeof(BaboonBirdAIPatcher));
             harmony.PatchAll(typeof(SpringManAIPatcher));
+            harmony.PatchAll(typeof(HUDManagerPatcher));
             harmony.PatchAll(typeof(PlayerControllerBPatcher));
             mls.LogInfo("Patched relevant components for correct item behaviours...");
         }
