@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CustomItemBehaviourLibrary.Compatibility
+﻿namespace CustomItemBehaviourLibrary.Compatibility
 {
     internal static class LategameCompatibility
     {

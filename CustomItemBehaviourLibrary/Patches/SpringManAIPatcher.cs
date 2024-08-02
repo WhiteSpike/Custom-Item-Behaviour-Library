@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Reflection;
-using Peeper.Behaviour;
+using CustomItemBehaviourLibrary.AbstractItems;
 
 namespace CustomItemBehaviourLibrary.Patches
 {

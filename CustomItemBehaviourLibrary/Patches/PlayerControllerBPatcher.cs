@@ -11,6 +11,20 @@ namespace CustomItemBehaviourLibrary.Patches
     [HarmonyPatch(typeof(PlayerControllerB))]
     internal static class PlayerControllerBPatcher
     {
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(PlayerControllerB.DropAllHeldItems))]
+        static bool DontDropItems(PlayerControllerB __instance)
+        {
+            if (!PortableTeleporterBehaviour.TPButtonPressed) return true;
+
+            PortableTeleporterBehaviour.TPButtonPressed = false;
+            __instance.isSinking = false;
+            __instance.isUnderwater = false;
+            __instance.sinkingValue = 0;
+            __instance.statusEffectAudio.Stop();
+            return false;
+        }
         [HarmonyPostfix]
         [HarmonyPatch(nameof(PlayerControllerB.Awake))]
         static void StartPostfix(PlayerControllerB __instance)

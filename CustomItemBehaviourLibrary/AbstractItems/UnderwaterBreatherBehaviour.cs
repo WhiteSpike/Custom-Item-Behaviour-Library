@@ -1,7 +1,4 @@
-﻿using GameNetcodeStuff;
-using UnityEngine;
-
-namespace DivingKit.Behaviour
+﻿namespace CustomItemBehaviourLibrary.AbstractItems
 {
     /// <summary>
     /// <para>Item which allows players holding the item to breath underwater, however their vision will be blocked by the model as it will be placed on their head.</para>

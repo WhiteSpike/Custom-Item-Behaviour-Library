@@ -1,11 +1,10 @@
 ﻿using CustomItemBehaviourLibrary.AbstractItems;
-using GameNetcodeStuff;
 using HarmonyLib;
 
 namespace CustomItemBehaviourLibrary.Patches
 {
     [HarmonyPatch(typeof(HUDManager))]
-    internal class HUDManagerPatcher
+    internal static class HUDManagerPatcher
     {
         [HarmonyPostfix]
         [HarmonyPatch(nameof(HUDManager.MeetsScanNodeRequirements))]
