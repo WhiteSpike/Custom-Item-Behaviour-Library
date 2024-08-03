@@ -138,13 +138,5 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         {
             TPButtonPressed = true;
         }
-
-        public static new void LoadItem()
-        {
-            // Teleporter Button SFX
-            //AudioClip itemBreak = AssetBundleHandler.GetAudioClip("Break");
-            //AudioClip error = AssetBundleHandler.GetAudioClip("Error");
-            //AudioClip buttonPressed = AssetBundleHandler.GetAudioClip("Button Press");
-        }
     }
 }

@@ -32,6 +32,17 @@ namespace CustomItemBehaviourLibrary.Patches
             __instance.gameObject.AddComponent<PlayerManager>();
         }
 
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(PlayerControllerB.KillPlayer))]
+        static void KillPlayerPostfix(PlayerControllerB __instance)
+        {
+            if (__instance != GameNetworkManager.Instance.localPlayerController) return;
+
+            PlayerManager.instance.ResetSensitivityMultiplier();
+            PlayerManager.instance.ResetSloppyMultiplier();
+            PlayerManager.instance.SetHoldingContainer(false);
+        }
+
         [HarmonyTranspiler]
         [HarmonyPatch(nameof(PlayerControllerB.Update))]
         static IEnumerable<CodeInstruction> UpdateTranspiler(IEnumerable<CodeInstruction> instructions)
