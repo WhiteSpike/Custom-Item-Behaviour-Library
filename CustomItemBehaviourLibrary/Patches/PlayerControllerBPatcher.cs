@@ -1,4 +1,5 @@
 ﻿using CustomItemBehaviourLibrary.AbstractItems;
+using CustomItemBehaviourLibrary.Compatibility;
 using CustomItemBehaviourLibrary.Manager;
 using CustomItemBehaviourLibrary.Misc;
 using GameNetcodeStuff;
@@ -37,10 +38,24 @@ namespace CustomItemBehaviourLibrary.Patches
         static void KillPlayerPostfix(PlayerControllerB __instance)
         {
             if (__instance != GameNetworkManager.Instance.localPlayerController) return;
-
-            PlayerManager.instance.ResetSensitivityMultiplier();
-            PlayerManager.instance.ResetSloppyMultiplier();
-            PlayerManager.instance.SetHoldingContainer(false);
+            if (PlayerManager.instance.holdingContainer)
+            {
+                if (LategameCompatibility.Enabled)
+                {
+                    foreach (GrabbableObject grabbableObject in __instance.ItemSlots)
+                    {
+                        ContainerBehaviour container = grabbableObject.GetComponent<ContainerBehaviour>();
+                        if (container == null) continue;
+                        container.UpdatePlayerAttributes(grabbing: false);
+                        return;
+                    }
+                }
+                else
+                {
+                    ContainerBehaviour container = __instance.currentlyHeldObjectServer.GetComponent<ContainerBehaviour>();
+                    container.UpdatePlayerAttributes(grabbing: false);
+                }
+            }
         }
 
         [HarmonyTranspiler]

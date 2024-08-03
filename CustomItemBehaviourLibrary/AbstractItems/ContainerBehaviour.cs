@@ -49,7 +49,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         /// Current amount of items stored in the container
         /// </summary>
         private int currentAmountItems;
-        private float totalWeight;
+        internal float totalWeight;
         /// <summary>
         /// Multiplier to the inserted item's weight when inserted into the container to increase the container's total weight
         /// </summary>
@@ -282,14 +282,13 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             return false;
         }
 
-        void UpdatePlayerAttributes(bool grabbing)
+        internal void UpdatePlayerAttributes(bool grabbing)
         {
             if (grabbing)
             {
                 if (LategameCompatibility.Enabled)
                 {
-                    playerHeldBy.carryWeight -= Mathf.Clamp(BackMuscles.DecreasePossibleWeight(itemProperties.weight - 1f), 0, 10f);
-                    playerHeldBy.carryWeight += Mathf.Clamp(BackMuscles.DecreasePossibleWeight(totalWeight - 1f), 0, 10f);
+                    LategameCompatibility.AddWeight(this);
                 }
                 else
                 {
@@ -305,8 +304,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             {
                 if (LategameCompatibility.Enabled)
                 {
-                    playerHeldBy.carryWeight += Mathf.Clamp(BackMuscles.DecreasePossibleWeight(itemProperties.weight - 1f), 0, 10f);
-                    playerHeldBy.carryWeight -= Mathf.Clamp(BackMuscles.DecreasePossibleWeight(totalWeight - 1f), 0, 10f);
+                    LategameCompatibility.RemoveWeight(this);
                 }
                 else
                 {
@@ -378,7 +376,17 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         private void UpdateContainerWeightClientRpc()
         {
             GrabbableObject[] storedItems = GetComponentsInChildren<GrabbableObject>();
-            if (isHeld && playerHeldBy == GameNetworkManager.Instance.localPlayerController) playerHeldBy.carryWeight -= Mathf.Clamp(BackMuscles.DecreasePossibleWeight(totalWeight - 1f), 0f, 10f);
+            if (isHeld && playerHeldBy == GameNetworkManager.Instance.localPlayerController)
+            {
+                if (LategameCompatibility.Enabled)
+                {
+                    LategameCompatibility.RemoveTotalWeight(this);
+                }
+                else
+                {
+                    playerHeldBy.carryWeight -= Mathf.Clamp(totalWeight - 1f, 0f, 10f);
+                }
+            }
             totalWeight = defaultWeight;
             currentAmountItems = 0;
             for (int i = 0; i < storedItems.Length; i++)
@@ -388,7 +396,17 @@ namespace CustomItemBehaviourLibrary.AbstractItems
                 GrabbableObject storedItem = storedItems[i];
                 totalWeight += (storedItem.itemProperties.weight - 1f) * weightReduceMultiplier;
             }
-            if (isHeld && playerHeldBy == GameNetworkManager.Instance.localPlayerController) playerHeldBy.carryWeight += Mathf.Clamp(BackMuscles.DecreasePossibleWeight(totalWeight - 1f), 0f, 10f);
+            if (isHeld && playerHeldBy == GameNetworkManager.Instance.localPlayerController)
+            {
+                if (LategameCompatibility.Enabled)
+                {
+                    LategameCompatibility.AddTotalWeight(this);
+                }
+                else
+                {
+                    playerHeldBy.carryWeight += Mathf.Clamp(totalWeight - 1f, 0f, 10f);
+                }
+            }
         }
         /// <summary>
         /// Action when the interaction bar is completely filled on the container of the container.
