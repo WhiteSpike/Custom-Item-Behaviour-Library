@@ -9,6 +9,9 @@ using UnityEngine;
 
 namespace CustomItemBehaviourLibrary.AbstractItems
 {
+    /// <summary>
+    /// Behaviour for items which act as containers to transport other items
+    /// </summary>
     public abstract class ContainerBehaviour : GrabbableObject
     {
         internal const float VELOCITY_APPLY_EFFECT_THRESHOLD = 5.0f;

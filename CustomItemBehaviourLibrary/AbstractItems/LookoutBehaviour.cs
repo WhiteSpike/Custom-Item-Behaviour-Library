@@ -13,6 +13,9 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         /// Wether the instance of the class can stop coil-heads from moving or not
         /// </summary>
         private bool Active;
+        /// <summary>
+        /// How far it can detect Coil-Head entities to stop them from moving
+        /// </summary>
         protected int maximumRange;
 
         public override void Start()
@@ -29,7 +32,11 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         {
             Active = enable;
         }
-
+        /// <summary>
+        /// Wether the item has line of sight to the given position
+        /// </summary>
+        /// <param name="pos">The position we wish to check if they have line of sight on</param>
+        /// <returns></returns>
         protected virtual bool HasLineOfSightToPosition(Vector3 pos)
         {
             if (!Active) return false;
