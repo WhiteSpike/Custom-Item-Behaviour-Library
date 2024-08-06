@@ -70,6 +70,10 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         /// </summary>
         protected float lookSensitivityDrawback;
         /// <summary>
+        /// Make items invisible when deposited in the container
+        /// </summary>
+        protected bool makeItemsInvisible;
+        /// <summary>
         /// The GameObject responsible to be containing all of the items stored in the container
         /// </summary>
         private BoxCollider container;
@@ -193,6 +197,17 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             if (!grabbableObject.itemProperties.syncDiscardFunction)
             {
                 grabbableObject.playerHeldBy = null;
+            }
+        }
+
+        public override void EquipItem()
+        {
+            base.EquipItem();
+            GrabbableObject[] storedItems = GetComponentsInChildren<GrabbableObject>();
+            for (int i = 0; i < storedItems.Length; i++)
+            {
+                if (storedItems[i] == this) continue; // Don't drop the container
+                storedItems[i].EnableItemMeshes(!makeItemsInvisible);
             }
         }
         private void UpdateContainerSounds()
@@ -335,6 +350,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             {
                 if (storedItems[i] is ContainerBehaviour) continue;
                 playerHeldBy.SetItemInElevator(playerHeldBy.isInHangarShipRoom, playerHeldBy.isInElevator, storedItems[i]);
+                storedItems[i].EnableItemMeshes(!makeItemsInvisible);
             }
             base.DiscardItem();
         }
@@ -430,7 +446,9 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             vector.y = triggerCollider.bounds.max.y;
             vector.y += playerInteractor.currentlyHeldObjectServer.itemProperties.verticalOffset;
             vector = GetComponent<NetworkObject>().transform.InverseTransformPoint(vector);
+            GrabbableObject grabbableObject = playerInteractor.currentlyHeldObjectServer;
             playerInteractor.DiscardHeldObject(placeObject: true, parentObjectTo: GetComponent<NetworkObject>(), placePosition: vector, matchRotationOfParent: false);
+            grabbableObject.EnableItemMeshes(!makeItemsInvisible);
             UpdateContainerWeightServerRpc();
         }
 
