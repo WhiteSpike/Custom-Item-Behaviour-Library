@@ -80,7 +80,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         /// <summary>
         /// Trigger responsible to allow interacting with container's container of items
         /// </summary>
-        private InteractTrigger[] triggers;
+        protected InteractTrigger[] triggers;
         protected bool playSounds;
         private Dictionary<Restrictions, Func<bool>> checkMethods;
 
