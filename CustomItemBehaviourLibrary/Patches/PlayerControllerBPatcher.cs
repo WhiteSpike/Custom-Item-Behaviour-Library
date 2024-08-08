@@ -59,6 +59,25 @@ namespace CustomItemBehaviourLibrary.Patches
         }
 
         [HarmonyTranspiler]
+        [HarmonyPatch(nameof(PlayerControllerB.SetPlayerSanityLevel))]
+        static IEnumerable<CodeInstruction> SetPlayerSanityLevelTranspiler(IEnumerable<CodeInstruction> instructions)
+        {
+            MethodInfo decreaseSanityIncrease = typeof(PlayerManager).GetMethod(nameof(PlayerManager.DecreaseSanityIncrease));
+
+            int index = 0;
+            List<CodeInstruction> codes = new(instructions);
+
+            Tools.FindFloat(ref index, ref codes, findValue: 0.8f, addCode: decreaseSanityIncrease, errorMessage: "Couldn't find first insanity multiplier");
+            Tools.FindFloat(ref index, ref codes, findValue: 0.2f, addCode: decreaseSanityIncrease, errorMessage: "Couldn't find first insanity multiplier");
+            Tools.FindFloat(ref index, ref codes, findValue: -2f, addCode: decreaseSanityIncrease, errorMessage: "Couldn't find first insanity multiplier");
+            Tools.FindFloat(ref index, ref codes, findValue: 0.5f, addCode: decreaseSanityIncrease, errorMessage: "Couldn't find first insanity multiplier");
+            Tools.FindFloat(ref index, ref codes, findValue: 0.3f, addCode: decreaseSanityIncrease, errorMessage: "Couldn't find first insanity multiplier");
+            Tools.FindFloat(ref index, ref codes, findValue: -3f, addCode: decreaseSanityIncrease, errorMessage: "Couldn't find first insanity multiplier");
+
+            return codes;
+        }
+
+        [HarmonyTranspiler]
         [HarmonyPatch(nameof(PlayerControllerB.Update))]
         static IEnumerable<CodeInstruction> UpdateTranspiler(IEnumerable<CodeInstruction> instructions)
         {

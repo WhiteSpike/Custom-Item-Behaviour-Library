@@ -9,10 +9,51 @@ namespace CustomItemBehaviourLibrary.Manager
         internal float sloppyMultiplier = DEFAULT_MULTIPLIER;
         internal bool holdingContainer = false;
 
+        internal float sanityOvertimeTimer;
+        internal float sanityOvertimeReplenish;
+
         internal static PlayerManager instance;
-        void Awake()
+        void Start()
         {
             instance = this;
+            sanityOvertimeReplenish = 0.0f;
+            sanityOvertimeTimer = 0.0f;
+        }
+
+        void Update()
+        {
+            DepleteSanityOvertime();
+        }
+
+        internal void DepleteSanityOvertime()
+        {
+            if (sanityOvertimeReplenish <= 0f) return;
+            sanityOvertimeTimer -= Time.deltaTime;
+
+            if (sanityOvertimeTimer <= 0f)
+            {
+                sanityOvertimeReplenish = 0f;
+            }
+        }
+
+        internal void AddSanityOvertimeTimer(float sanityOvertimeTimer)
+        {
+            this.sanityOvertimeTimer += sanityOvertimeTimer;
+        }
+
+        internal void SetSanityOvertimeReplenish(float sanityOvertimeReplenish)
+        {
+            this.sanityOvertimeReplenish = sanityOvertimeReplenish;
+        }
+
+        internal static float GetSanityOvertimeReplenish()
+        {
+            return instance.sanityOvertimeReplenish;
+        }
+
+        public static float DecreaseSanityIncrease(float defaultValue)
+        {
+            return defaultValue - instance.sanityOvertimeReplenish;
         }
 
         internal void SetSensitivityMultiplier(float sensitivityMultiplier)
