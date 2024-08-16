@@ -81,6 +81,11 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         /// Trigger responsible to allow interacting with container's container of items
         /// </summary>
         protected InteractTrigger[] triggers;
+        /// <summary>
+        /// Colliders from which the triggers are linked to
+        /// These are mainly used to be toggled on and off if you do not wish to see the interact prompts during certain conditions
+        /// </summary>
+        protected BoxCollider[] triggerColliders;
         protected bool playSounds;
         private Dictionary<Restrictions, Func<bool>> checkMethods;
 
@@ -106,6 +111,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
 
             wheelsNoise = GetComponent<AudioSource>();
             triggers = GetComponentsInChildren<InteractTrigger>();
+            triggerColliders = new BoxCollider[triggers.Length];
             foreach (BoxCollider collider in GetComponentsInChildren<BoxCollider>())
             {
                 if (collider.name != "PlaceableBounds") continue;
@@ -113,12 +119,14 @@ namespace CustomItemBehaviourLibrary.AbstractItems
                 container = collider;
                 break;
             }
-            foreach (InteractTrigger trigger in triggers)
+            for (int i = 0; i < triggers.Length; i++)
             {
+                InteractTrigger trigger = triggers[i];
                 trigger.onInteract.AddListener(InteractContainer);
                 trigger.tag = nameof(InteractTrigger); // Necessary for the interact UI to appear
                 trigger.interactCooldown = false;
                 trigger.cooldownTime = 0;
+                triggerColliders[i] = trigger.GetComponent<BoxCollider>();
             }
             checkMethods = new Dictionary<Restrictions, Func<bool>>
             {
@@ -143,6 +151,12 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             base.Update();
             UpdateContainerSounds();
             UpdateInteractTriggers();
+            bool show = ShowDepositPrompts();
+            for(int i = 0; i < triggerColliders.Length; i++)
+            {
+                BoxCollider collider = triggerColliders[i];
+                collider.enabled = show;
+            }
         }
         public void UpdateContainerDrop()
         {
@@ -475,6 +489,11 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         {
             if (item == null) return false;
             return item.GetComponentInParent<ContainerBehaviour>() != null;
+        }
+
+        protected virtual bool ShowDepositPrompts()
+        {
+            return true;
         }
     }
 }
