@@ -94,6 +94,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         private const string TOO_MUCH_WEIGHT_TEXT = "Too much weight in the container...";
         private const string ALL_FULL_TEXT = "Cannot insert any more items in the container...";
         private const string WHEELBARROWCEPTION_TEXT = "You're not allowed to do that...";
+        private const string ENEMY_DEPOSIT_TEXT = "You shouldn't put alive things in here...";
         private const string DEPOSIT_TEXT = "Depositing item...";
         private const string START_DEPOSIT_TEXT = "Deposit item: [LMB]";
         private const string WITHDRAW_ITEM_TEXT = "Withdraw item: [LMB]";
@@ -260,6 +261,12 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             if (holdingItem.GetComponent<ContainerBehaviour>() != null)
             {
                 SetInteractTriggers(false, WHEELBARROWCEPTION_TEXT);
+                return;
+            }
+            EnemyAI enemy = holdingItem.GetComponent<EnemyAI>();
+            if (enemy != null && !enemy.isEnemyDead)
+            {
+                SetInteractTriggers(false, ENEMY_DEPOSIT_TEXT);
                 return;
             }
             if (CheckContainerRestrictions()) return;
