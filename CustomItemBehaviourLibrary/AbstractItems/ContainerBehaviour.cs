@@ -185,7 +185,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         /// Copy paste from PlayerControllerB.DropAllHeldItems applied on a singular grabbable object script
         /// </summary>
         /// <param name="grabbableObject"></param>
-        private void DropItem(ref GrabbableObject grabbableObject)
+        protected void DropItem(ref GrabbableObject grabbableObject)
         {
             grabbableObject.parentObject = null;
             grabbableObject.heldByPlayerOnServer = false;
