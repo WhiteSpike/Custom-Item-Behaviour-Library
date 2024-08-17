@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CustomItemBehaviourLibrary.AbstractItems
@@ -47,7 +48,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
 
         public static bool HasLineOfSightToPeepers(Vector3 springPosition)
         {
-            foreach (LookoutBehaviour peeper in coilHeadItems)
+            foreach (LookoutBehaviour peeper in coilHeadItems.ToList())
             {
                 if (peeper == null)
                 {
