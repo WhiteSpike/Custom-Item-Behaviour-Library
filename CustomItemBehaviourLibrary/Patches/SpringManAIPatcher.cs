@@ -28,7 +28,7 @@ namespace CustomItemBehaviourLibrary.Patches
             for (int i = 1; i < codes.Count && !foundStopMovementFlag; i++)
             {
                 if (codes[i - 1].opcode != OpCodes.Ldc_I4_0) continue;
-                if (codes[i].opcode != OpCodes.Stloc_1) continue;
+                if (codes[i].opcode != OpCodes.Stloc_3) continue;
 
                 codes.Insert(i, new CodeInstruction(OpCodes.Or));
                 codes.Insert(i, new CodeInstruction(OpCodes.Call, peeperMethod));

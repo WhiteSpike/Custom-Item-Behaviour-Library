@@ -120,7 +120,7 @@ namespace CustomItemBehaviourLibrary.Patches
         {
             ContainerUnparenting(__instance.currentlyHeldObjectServer);
         }
-        static void ContainerUnparenting(GrabbableObject heldObject)
+        internal static void ContainerUnparenting(GrabbableObject heldObject)
         {
             if (heldObject == null) return;
 

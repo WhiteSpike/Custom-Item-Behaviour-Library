@@ -43,7 +43,7 @@ namespace CustomItemBehaviourLibrary
                 }
             }
             PatchMainVersion();
-
+            PatchBetaVersion();
             mls.LogInfo($"{Metadata.NAME} {Metadata.VERSION} has been loaded successfully.");
         }
         internal static void PatchMainVersion()
@@ -53,6 +53,25 @@ namespace CustomItemBehaviourLibrary
             harmony.PatchAll(typeof(HUDManagerPatcher));
             harmony.PatchAll(typeof(PlayerControllerBPatcher));
             mls.LogInfo("Patched relevant components for correct item behaviours...");
+        }
+        internal static void PatchBetaVersion()
+        {
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            for (int i = 0; i < assemblies.Length; i++)
+            {
+                if (assemblies[i].GetName().Name != "Assembly-CSharp") continue;
+                Type[] types = assemblies[i].GetTypes();
+                for (int j = 0; j < types.Length; j++)
+                {
+                    if (types[j].Name == "BeltBagItem")
+                    {
+                        harmony.PatchAll(typeof(BeltBagItemPatcher));
+                        mls.LogInfo("Patched belt bag for correct behaviour with containers.");
+                        return;
+                    }
+                }
+                return;
+            }
         }
     }   
 }
