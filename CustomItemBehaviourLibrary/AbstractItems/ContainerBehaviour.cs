@@ -4,6 +4,7 @@ using GameNetcodeStuff;
 using MoreShipUpgrades.UpgradeComponents.TierUpgrades.AttributeUpgrades;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -88,6 +89,8 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         protected BoxCollider[] triggerColliders;
         protected bool playSounds;
         private Dictionary<Restrictions, Func<bool>> checkMethods;
+        protected List<Collider> noItemsDepositedCollider;
+        protected List<Collider> itemsDepositedCollider;
 
         private const string NO_ITEMS_TEXT = "No items to deposit...";
         private const string FULL_TEXT = "Too many items in the container";
@@ -135,7 +138,20 @@ namespace CustomItemBehaviourLibrary.AbstractItems
                 [Restrictions.TotalWeight] = CheckContainerWeightRestriction,
                 [Restrictions.All] = CheckContainerAllRestrictions
             };
-
+            noItemsDepositedCollider = [];
+            itemsDepositedCollider = [];
+            foreach (Collider collider in propColliders.Where(x => x.CompareTag("PhysicsProp")))
+            {
+                if (!collider.enabled)
+                {
+                    noItemsDepositedCollider.Add(collider);
+                }
+                else
+                {
+                    itemsDepositedCollider.Add(collider);
+                }
+            }
+            ToggleGrabColliders(currentAmountItems > 0);
             SetupItemAttributes();
         }
 
@@ -158,6 +174,14 @@ namespace CustomItemBehaviourLibrary.AbstractItems
                 BoxCollider collider = triggerColliders[i];
                 collider.enabled = show;
             }
+        }
+
+        protected virtual void ToggleGrabColliders(bool deposittedItems)
+        {
+            foreach (Collider collider in noItemsDepositedCollider)
+                collider.enabled = !deposittedItems;
+            foreach (Collider collider in itemsDepositedCollider)
+                collider.enabled = deposittedItems;
         }
         public void UpdateContainerDrop()
         {
@@ -373,6 +397,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
                 playerHeldBy.SetItemInElevator(playerHeldBy.isInHangarShipRoom, playerHeldBy.isInElevator, storedItems[i]);
                 storedItems[i].EnableItemMeshes(!makeItemsInvisible);
             }
+            ToggleGrabColliders(currentAmountItems > 0);
             base.DiscardItem();
         }
         public override void GrabItem()
@@ -385,6 +410,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
 
                 if (playerHeldBy.isCrouching) playerHeldBy.Crouch(!playerHeldBy.isCrouching);
             }
+            ToggleGrabColliders(currentAmountItems > 0);
         }
         /// <summary>
         /// Setups attributes related to the container item
@@ -447,6 +473,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
                     playerHeldBy.carryWeight += Mathf.Clamp(totalWeight - 1f, 0f, 10f);
                 }
             }
+            ToggleGrabColliders(currentAmountItems > 0);
         }
         /// <summary>
         /// Action when the interaction bar is completely filled on the container of the container.
@@ -501,6 +528,16 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         protected virtual bool ShowDepositPrompts()
         {
             return true;
+        }
+
+        public int GetCurrentAmountItems()
+        {
+            return currentAmountItems;
+        }
+
+        public float GetTotalWeight()
+        {
+            return totalWeight;
         }
     }
 }
