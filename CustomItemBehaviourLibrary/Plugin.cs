@@ -52,6 +52,7 @@ namespace CustomItemBehaviourLibrary
             harmony.PatchAll(typeof(SpringManAIPatcher));
             harmony.PatchAll(typeof(HUDManagerPatcher));
             harmony.PatchAll(typeof(PlayerControllerBPatcher));
+            harmony.PatchAll(typeof(EntranceTeleportPatcher));
             mls.LogInfo("Patched relevant components for correct item behaviours...");
         }
         internal static void PatchBetaVersion()

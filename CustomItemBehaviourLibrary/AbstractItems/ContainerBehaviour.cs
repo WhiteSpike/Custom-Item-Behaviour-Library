@@ -514,6 +514,18 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             if (player.thisController.velocity.magnitude <= VELOCITY_APPLY_EFFECT_THRESHOLD) return defaultValue;
             return defaultValue * PlayerManager.instance.GetSloppyMultiplier();
         }
+        public static void ToggleStoredItemsBooleans(GrabbableObject grabbableObject, bool isEntranceToBuilding)
+        {
+            if (grabbableObject is not ContainerBehaviour container) return;
+            GrabbableObject[] storedItems = container.GetComponentsInChildren<GrabbableObject>();
+            for (int i = 0; i < storedItems.Length; i++)
+            {
+                if (storedItems[i] is ContainerBehaviour) continue;
+                storedItems[i].isInFactory = isEntranceToBuilding;
+                storedItems[i].EnableItemMeshes(!container.makeItemsInvisible);
+            }
+
+        }
         public static bool CheckIfPlayerCarryingContainer()
         {
             return PlayerManager.instance.GetHoldingContainer();
