@@ -44,7 +44,6 @@ namespace CustomItemBehaviourLibrary.Patches
 
         [HarmonyPatch(nameof(EntranceTeleport.TeleportPlayer))]
         [HarmonyTranspiler]
-        [HarmonyDebug]
         static IEnumerable<CodeInstruction> TeleportPlayerTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo ToggleStoredItemsBooleans = typeof(ContainerBehaviour).GetMethod(nameof(ContainerBehaviour.ToggleStoredItemsBooleans));
