@@ -1,4 +1,12 @@
 <details>
+<summary> 1.2.8 </summary>
+
+- Recompiled against new Unity Netcode version used in v73.
+    - Game versions before v73 need to use 1.2.7 of this mod.
+ 
+</details>
+
+<details>
 <summary> 1.2.7 </summary>
 
 - Recompiled to latest release of Lethal Company (v71)
@@ -73,7 +81,7 @@
 
 </details>
 <details>
-<summary> <h1>1.0.0</h1> </summary>
+<summary> 1.0.0 </summary>
 
 - Initial release
 
