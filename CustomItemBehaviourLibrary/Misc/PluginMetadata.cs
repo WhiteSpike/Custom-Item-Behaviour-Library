@@ -4,6 +4,6 @@
     {
         public const string GUID = "com.github.WhiteSpike.CustomItemBehaviourLibrary";
         public const string NAME = "Custom Item Behaviour Library";
-        public const string VERSION = "1.2.7";
+        public const string VERSION = "1.2.9";
     }
 }

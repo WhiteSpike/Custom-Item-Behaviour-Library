@@ -1,4 +1,11 @@
 <details>
+<summary> 1.2.9 </summary>
+
+- Fixed issue with storing items in the containers and removing them afterwards not updating the total amount of items stored in them.
+
+</details>
+
+<details>
 <summary> 1.2.8 </summary>
 
 - Recompiled against new Unity Netcode version used in v73.

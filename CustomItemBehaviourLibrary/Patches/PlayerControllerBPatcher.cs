@@ -6,6 +6,7 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace CustomItemBehaviourLibrary.Patches
 {
@@ -114,21 +115,36 @@ namespace CustomItemBehaviourLibrary.Patches
             return codes;
         }
 
-        [HarmonyPostfix]
+        [HarmonyTranspiler]
+        [HarmonyDebug]
         [HarmonyPatch(nameof(PlayerControllerB.GrabObjectClientRpc))]
-        static void GrabObjectClientRpcPostfix(PlayerControllerB __instance)
+        static IEnumerable<CodeInstruction> GrabObjectClientRpcTranspiler(IEnumerable<CodeInstruction> instructions)
         {
-            ContainerUnparenting(__instance.currentlyHeldObjectServer);
+            MethodInfo ContainerUnparentTranspiledFunction = typeof(PlayerControllerBPatcher).GetMethod(nameof(PlayerControllerBPatcher.ContainerUnparentTranspiledFunction));
+            MethodInfo SwitchToItemSlot = typeof(PlayerControllerB).GetMethod(nameof(PlayerControllerB.SwitchToItemSlot), BindingFlags.Instance | BindingFlags.NonPublic);
+            FieldInfo currentlyHeldObjectServer = typeof(PlayerControllerB).GetField(nameof(PlayerControllerB.currentlyHeldObjectServer));
+            List<CodeInstruction> codes = new(instructions);
+            int index = 0;
+            Tools.FindMethod(ref index, ref codes, findMethod: SwitchToItemSlot, skip: true);
+            codes.Insert(index, new CodeInstruction(opcode: OpCodes.Call, operand: ContainerUnparentTranspiledFunction));
+            codes.Insert(index, new CodeInstruction(opcode: OpCodes.Ldfld, operand: currentlyHeldObjectServer));
+            codes.Insert(index, new CodeInstruction(opcode: OpCodes.Ldarg_0));
+            return codes;
         }
         internal static void ContainerUnparenting(GrabbableObject heldObject)
-        {
-            if (heldObject == null) return;
+		{
+			if (heldObject == null) return;
 
             ContainerBehaviour container = heldObject.GetComponentInParent<ContainerBehaviour>();
             if (container == null || heldObject is ContainerBehaviour) return;
             heldObject.transform.SetParent(heldObject.parentObject);
             heldObject.transform.localScale = heldObject.originalScale;
             container.DecrementStoredItems();
+        }
+
+        public static void ContainerUnparentTranspiledFunction(GrabbableObject currentlyHeldObjectServer)
+        {
+            ContainerUnparenting(currentlyHeldObjectServer);
         }
     }
 }
