@@ -1,4 +1,11 @@
 <details>
+<summary> 1.2.10 </summary>
+
+- Added configuration for blacklisting items from containers, stopping the player from depositing these items into them.
+    - This should be used for items that can cause issues when being deposited into a container.
+</details>
+
+<details>
 <summary> 1.2.9 </summary>
 
 - Fixed issue with storing items in the containers and removing them afterwards not updating the total amount of items stored in them.

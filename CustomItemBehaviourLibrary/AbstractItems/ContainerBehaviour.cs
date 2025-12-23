@@ -1,4 +1,5 @@
 ﻿using CustomItemBehaviourLibrary.Compatibility;
+using CustomItemBehaviourLibrary.Configuration;
 using CustomItemBehaviourLibrary.Manager;
 using GameNetcodeStuff;
 using MoreShipUpgrades.UpgradeComponents.TierUpgrades.AttributeUpgrades;
@@ -97,6 +98,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         private const string TOO_MUCH_WEIGHT_TEXT = "Too much weight in the container...";
         private const string ALL_FULL_TEXT = "Cannot insert any more items in the container...";
         private const string WHEELBARROWCEPTION_TEXT = "You're not allowed to do that...";
+        private const string BLACKLISTED_ITEM_TEXT = "This item is blacklisted from containers...";
         private const string ENEMY_DEPOSIT_TEXT = "You shouldn't put alive things in here...";
         private const string DEPOSIT_TEXT = "Depositing item...";
         private const string START_DEPOSIT_TEXT = "Deposit item: [LMB]";
@@ -285,6 +287,11 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             if (holdingItem.GetComponent<ContainerBehaviour>() != null)
             {
                 SetInteractTriggers(false, WHEELBARROWCEPTION_TEXT);
+                return;
+            }
+            if (IsBlacklistedItem(holdingItem))
+            {
+                SetInteractTriggers(false, BLACKLISTED_ITEM_TEXT);
                 return;
             }
             EnemyAI enemy = holdingItem.GetComponent<EnemyAI>();
@@ -476,7 +483,7 @@ namespace CustomItemBehaviourLibrary.AbstractItems
             ToggleGrabColliders(currentAmountItems > 0);
         }
         /// <summary>
-        /// Action when the interaction bar is completely filled on the container of the container.
+        /// Action when the interaction bar is completely filled on the container.
         /// It will store the item in the container, allowing it to be carried when grabbing the container
         /// </summary>
         /// <param name="playerInteractor"></param>
@@ -487,6 +494,26 @@ namespace CustomItemBehaviourLibrary.AbstractItems
                 StoreItemInContainer(ref playerInteractor);
             }
         }
+
+        private bool IsBlacklistedItem(GrabbableObject item)
+        {
+            string[] blacklistedItems = Plugin.config.ContainerConfiguration.BlacklistedStorableItems.Value.Split(ContainerConfiguration.BLACKLISTED_ITEMS_DELIMITER);
+			ScanNodeProperties node = item.GetComponentInChildren<ScanNodeProperties>();
+
+			foreach (string blacklistedItem in  blacklistedItems)
+            {
+                bool isBlacklisted = item.itemProperties.itemName.Contains(blacklistedItem.Trim(), StringComparison.OrdinalIgnoreCase);
+                if (isBlacklisted) return true;
+                if (node == null) continue;
+
+				isBlacklisted = node.headerText.Contains(blacklistedItem.Trim(), StringComparison.OrdinalIgnoreCase);
+                if (!isBlacklisted) continue;
+
+                return true;
+            }
+            return false;
+        }
+
         private void StoreItemInContainer(ref PlayerControllerB playerInteractor)
         {
             Collider triggerCollider = container;

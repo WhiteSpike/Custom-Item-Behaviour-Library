@@ -3,23 +3,26 @@ using BepInEx.Logging;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using CustomItemBehaviourLibrary.Misc;
 using MoreShipUpgrades.Patches.Enemies;
 using CustomItemBehaviourLibrary.Patches;
+using BepInEx.Configuration;
+using CustomItemBehaviourLibrary.Configuration;
 namespace CustomItemBehaviourLibrary
 {
     [BepInPlugin(Metadata.GUID,Metadata.NAME,Metadata.VERSION)]
     public class Plugin : BaseUnityPlugin
     {
         internal static readonly Harmony harmony = new(Metadata.GUID);
+        internal static LibraryConfiguration config;
         internal static readonly ManualLogSource mls = BepInEx.Logging.Logger.CreateLogSource(Metadata.NAME);
 
         void Awake()
         {
+            config = new(Config);
             // netcode patching stuff
             IEnumerable<Type> types;
             try
