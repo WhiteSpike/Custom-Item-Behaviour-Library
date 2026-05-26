@@ -116,7 +116,6 @@ namespace CustomItemBehaviourLibrary.Patches
         }
 
         [HarmonyTranspiler]
-        [HarmonyDebug]
         [HarmonyPatch(nameof(PlayerControllerB.GrabObjectClientRpc))]
         static IEnumerable<CodeInstruction> GrabObjectClientRpcTranspiler(IEnumerable<CodeInstruction> instructions)
         {
