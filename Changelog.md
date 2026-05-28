@@ -3,6 +3,9 @@
 
 - Added configuration for blacklisting items from containers, stopping the player from depositing these items into them.
     - This should be used for items that can cause issues when being deposited into a container.
+- Removed useless HarmonyDebug attribute, causing log spam during loading phase.
+- Updated patching phase to most recent game release.
+
 </details>
 
 <details>

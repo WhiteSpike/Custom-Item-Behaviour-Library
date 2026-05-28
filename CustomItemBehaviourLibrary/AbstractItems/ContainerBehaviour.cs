@@ -498,10 +498,12 @@ namespace CustomItemBehaviourLibrary.AbstractItems
         private bool IsBlacklistedItem(GrabbableObject item)
         {
             string[] blacklistedItems = Plugin.config.ContainerConfiguration.BlacklistedStorableItems.Value.Split(ContainerConfiguration.BLACKLISTED_ITEMS_DELIMITER);
+            if (blacklistedItems.Length == 0) return false;
 			ScanNodeProperties node = item.GetComponentInChildren<ScanNodeProperties>();
 
 			foreach (string blacklistedItem in  blacklistedItems)
             {
+                if (blacklistedItem.Trim() == "") continue;
                 bool isBlacklisted = item.itemProperties.itemName.Contains(blacklistedItem.Trim(), StringComparison.OrdinalIgnoreCase);
                 if (isBlacklisted) return true;
                 if (node == null) continue;
